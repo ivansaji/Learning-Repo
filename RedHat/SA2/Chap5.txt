@@ -1,0 +1,120 @@
+Manage SELinux Security
+
+SELinux is an additional layer of system security
+SElinux protects user data from compromised system services
+
+SELinux enforces a set of access rules
+-------------------------------------------------------------
+Changing SELinux Enforcement Mode
+
+Three modes
+	-> Enforcing : Enforce access control rules | computer runs in this mode
+	
+	-> Permissive : SELinux is active but not much control. only records warning of violated rules
+	
+	->Disabled
+
+SELinux is a set of security rules which define which process can access which files,directory or ports
+
+The context of SELinux ends in "_t" : eg: httpd_t or mysqld_t
+
+Changing SELinux mode:
+To determine current SElinux mode
+# getenforce
+
+To set a different ode
+# setenforce 0 : Change to Permissive mode
+# setenforce 1: Change to Enforcing
+
+This can also be changed in config file : /etc/selinux/config
+
+#sestatus : command can be used to find status of SELinux
+---------------------------------------------------------------
+Controlling SELinux File Contexts
+
+To list SELinux file contexts of file
+# ls -Z path
+
+To list SELinux file contexts of Directory
+# ls -Zd path
+
+Example:
+[root@rhel ec2-user]# ls -Zd /var/www/html/
+system_u:object_r:httpd_sys_content_t:s0 /var/www/html/
+"httpd_sys_content_t" shows the context
+
+
+Changing context of a file
+
+#semanage fcontext : Declare the default labelling for a file
+
+#restorecon : Applying context to the file command
+
+#chcon : changes SELinux contents, it does not save context changes in SELinux context DB
+
+eg:	Vitual is a directory
+	#chcon -t httpd_sys_content_t /virtual
+	#restorecon -v /virtual
+
+OR
+	
+SEMANAGE comand
+-a or --add : add a record of the specified object type
+-d or --delete : delete
+-l or --list :list
+
+eg:
+	#semanage fcontext -l
+	
+	#semanage fcontext -a -t httpd_sys_content_t '/virtual(/.*)?'
+	#restorecon -v /virtual
+----------------------------------------------------------------
+Adjusting SELinux Policy with booleans
+
+SELinux Booleans are switches(RUles) that changes behaviour of SELinux policy
+
+# getsebool -a : List booleans and their state
+# setsebool: modifies boleans
+# setsebool -P : Modifies the SELinux policy to make the modification persistant (make changes affected from boot time, without -p changes vanishes after shutdown)
+# semanage boolean -l : Reports on whether or not a boolean is persistant, long with short description of the boolean
+
+Example:
+#getsebool httpd_enable_homedirs 
+#getsebool -a
+#setsebool -P http_enable_homedirs on
+#setsebool -P http_enable_homedirs on
+
+-----------------------------------------------------------------
+Monitoring SELinux Violations
+
+
+Install "setroubleshoot-server" package to send SELinux messages to /var/log/messages
+
+setroubleshoot-server listens for audit messages in /var/log/audit/audit.log and sends short summary to /var/log/messages
+
+The summary includes a UUID
+
+#sealert -I UUID : produces report of specific incident
+#sealert -a /var/log/audit/audit.log : Produce report for all incidents in that file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

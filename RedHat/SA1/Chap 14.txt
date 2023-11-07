@@ -1,0 +1,61 @@
+Accessing Linux File systems
+
+Identifyng Filesystem & Devices
+
+Block devices (Hard drives,pendrives etc)are stored in : /dev/
+
+To get an overview about the file system mount points and amount of free space
+# df
+
+To improve readability by human
+# df -h
+
+To get info used by specific directory
+# du -h /root
+
+To get size of specific directory
+# du -sh <dir>
+---------------------------------------------------------------
+To get an overview of Existing partion as well as get UUID
+# blkid
+
+To list the partitions avalilable
+# lsblk
+
+To mount a device from dev to mnt
+
+# mount /dev/vbd1 /mnt/mydata
+# mount UUID="<uuid obtained by running blkid>"
+
+Unmount device
+# umount /mnt/mydata
+
+List all open files and the process accessing them in the provided directory
+# lsof /mnt/mydata
+
+-------------------------------------------------------------
+Locating files on system
+
+using locate
+# locate <file>
+
+This needs database to be updated using
+# updatedb
+
+To locate files using find
+# find / -name <keyword_search>
+# find / -name "*.txt"
+
+To display all files with user ownership root
+# find / -user root
+
+To display all files with group ownership root
+# find / -group root
+
+To display all files with permission
+# find / -perm 666
+
+To display files along with type(f- files, d-dir, l-symbolic link)
+# find / -user root -type f
+--------------------------------------------------------------
+

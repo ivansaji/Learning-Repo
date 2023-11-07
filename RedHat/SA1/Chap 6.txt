@@ -1,0 +1,60 @@
+Controlling Access to Files
+
+Three Permissions: Read(r), Write(w), Execute(x)
+
+Changing permissions
+# chmod who/what/which file/Dir
+
+Symbolic method
+
+Who: u,g,o,a
+What : +,-,=
+Which : r,w,x
+
+# chmod u+x file1
+# chmod g-r file2
+
+Numeric method
+r=4 , w=2,x=1
+
+chmod ugo file
+
+eg: # chmod 754 file
+---------------------------------------------------------------------
+Changing permissions of file
+# chown userowner:groupowner file
+
+To change user of a file to suni
+# chown suni file
+
+We can also use UserID of user(if UID of suni is 1000)
+# chown 1000 file
+
+To change group of a file (user-> suni && group -> poli)
+# chown suni:poli file1
+
+To change the group only
+# chown :poli file1
+
+-----------------------------------------------------------------------
+Special Permissions
+
+Symbolically
+
+u+s (suid)
+g+s (sgid)
+o+t (sticky)
+
+Numerically
+
+Setuid=4
+setgid=2
+sticky=1
+
+usage: # chmod permisison file
+
+u+s : File executes as the user owns that file, No effect on dir
+
+g+s : files execute as group owns that files, Files newly created in the directory have their group owner set to match group owner of dir
+
+o+t : No effect on files, Users with write on directory can only remove files that they own

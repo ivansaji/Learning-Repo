@@ -1,0 +1,117 @@
+System Logs
+
+A standard logging system based on syslog protocol is built into RHEL
+In RHEL8,syslog messages are handled by two services, systemd-journald and rsyslog
+
+rsyslog:
+rsyslog service sorts the syslog msgs based on facility and priority
+Writes the log to persistant files in /var/log
+
+The config files of rsyslog can be found at /etc/rsyslog.conf and all files in /etc/rsyslog.d/
+------------------------------------------------------------------------
+Overview of system log files
+>/var/log/messages : It stores auth related msgs,jobs etc
+
+>/var/log/secure : log file for security and auth related msgs and errors
+
+>/var/log/maillog: log file for mail server related messages
+
+>/var/log/cron : log file for periodically executed tasks
+
+>/var/log/boot.log : log files for system startup and boot
+--------------------------------------------------------------------------Overview of Syslog Priorities
+
+0: Emerge : system is unusable(Emergency Conditon)
+1: Alert : Action must be taken immediatley
+2: Crit : Critical Condition
+3: Err : Nonical Error Condition
+4: Warning : Warning Conditon
+5: Notice : Normal but significant event
+6: Info : Informal Event
+7: Debug : Debugging level message
+
+--------------------------------------------------------------------------
+
+Log File Rotation : logs are rotated to keep them from filling up the filesystem containing /var/log
+when a log file is rotated, it is renamed with an extension indicating the date on which it was rotated
+Once old log file is rotated, a new log file is created and and service that writes to it is notified
+
+-------------------------------------------------------------------------
+
+Analyse a syslog entry
+
+newest logs are stored in end
+
+Example
+Mar 25 05:32:11 | aws-machine | systemd-logind[718]|: New session 4 of user ec2-user.
+
+1. Timestamp
+2. host from which log was sent
+3. Program or process
+4: actual message
+
+-----------------------------------------------------------------------
+Reviewing Systemd Journal Entries
+
+
+systemd jounal stores logging data in structured, indexed binary file
+systemd journal is stored in /run/log by default
+
+Examples:
+#journalctl : shows full system journal
+
+#journalctl -n 5 : shows last 5 entries, without number shows 10 last entries
+
+#journalctl -p err : only lists log entires of priority err
+
+#journalctl -f : Similar to tail command
+
+# journalctl --since "2014-02-19 20:30:00" --untill "2014-02-13 12:00:00" : shows from that entry to this entry
+
+
+------------------------------------------------------------------------
+Maintaining Accurate Time
+Time sync is necesary when analysing logs of multiple systems
+it uses ntp
+
+to do this... it uses #timedatectl
+
+#timedatectl : shows overview of time settings
+
+#timedatectl list-timezones : lists timezones
+
+#timedatectl set-timezone America/Phoenix : change current time zone
+
+#timedatectl set-time 9:00:00 set current date and time
+
+#timedatectl set-ntp true : enable ntp
+	
+-------------------------------------------------------------------------
+
+Configuring NTP
+
+Configuring and monitoring chronyd
+
+To reconfigure the chronyd server to synchronize with classroom.example.com instead of default servers configured in /etc/chrony.conf
+
+remove the other server entries and replace them with
+server classroom.example.com iburst
+
+Restart chronyd service
+#systemctl restart chronyd
+
+--------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+

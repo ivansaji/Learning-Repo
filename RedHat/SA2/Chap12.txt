@@ -1,0 +1,205 @@
+Managing Containers
+
+
+Installing Container Management tools
+# yum module install container-tools
+
+Containers are named based on the following fully qualified image name syntax:
+
+registry_name/user_name/image_name:tag
+
+umagename:uniqye in uyser namespace
+tag: image version
+
+podman: manages containers and container images
+skopeo : used to inspect,copy,delete and sign containers
+buildah: used to create containers
+
+In Rootless containers ports below 1024 is allowed only
+
+Running Containers in Linux
+
+1. Pull the container from reg
+
+$ podman pull registry.access.redhat.com/ubi8/ubi:latest
+
+2. View images
+
+$ podman image
+
+3. Run container from image
+
+$ podman run -it registry.access.redhat.com/ubi8/ubi:latest
+
+4. Seaching images
+
+$ podman search
+
+5. Inspecting container
+
+$skopeo inspect docker://registry.redhat.io/rhel8/python-36
+
+6. Remove local image
+
+$ podman rmi <imagename>
+
+7.Mapping hostport to container (port mapping)
+
+$ podman run -d -p 8000:8080 registry.redhat.io/rhel8/httpd-24
+
+-d helps to run in detached mode, background
+-p <port on system>:<portoncontainer> - all traffic coming in 8000 will be forwarded to 8080
+
+8. Customizing container - passing env variables to configure a container
+perform an inspect to find env variables
+#podman inspect <containername>
+
+9. Passing Environment variables to configure a container
+use podman run command with -e to pass environment variables to a process inside container
+
+10. Providing a persistant storage
+Creates a directory in host machine to store data and container shares the container with it
+
+To mount a directory to container,
+when we run the container, use -v or --volume (--volume host_dir:container_dir:Z)
+with Z option, podman automatically applis SELinux_container_file_t context type to host dir
+
+We can set user service like a system service(start at boot and stop at shutdown)#
+
+#loginctl enable-linger : enable this service
+#loginctl disable-linger : disable this service
+#loginctl show-user <user> : check linger for user
+
+Podman Systemd : use and manage container from host
+
+--------------------------------------------------------------------------------
+Demonstration
+
+#yum module install container-tools -y
+
+Pull a public container image
+$ podman pull httpd
+-----------------------------------------------
+See image downloaded from public repo
+$ podman images
+-------------------------------------------------
+Run an image
+$ podman run -it <imagenamae> /bin/bash
+
+i: Input to container
+t: Getting a terminal
+
+Run an image in foreground ( not advisable - cannot use terminal)
+$ podman run <imagenamae>
+
+Run an image in background (detached mode)
+$ podman -d run <imagenamae>
+
+Now we enter the container
+
+press ctrl + D to exit from container
+---------------------------------------------------
+View running containers
+$ podman ps -a
+-------------------------------------------------
+Remove a container from system
+
+$podman stop <containerID> : Stop the container
+$podman ps : check status of container
+$podman rmi <imagename> : delete the container
+#podman rm <imageID> : delete the containers
+------------------------------------------------
+Portmapping:
+$podman run -d -p 8000:8080 <imagename> : maps port 8000 on host to 8080 on container
+$podman ps : recheck it
+-------------------------------------------------
+Inspecting a container:
+$podman inspect <imagename>
+-----------------------------------------------
+Customizing image using environmental variables
+$podman pull mariadb : pull mariadb image
+
+Use -e to customisely run image 
+$podman run -d --name mydb -e MYSQL_USER=user1 -e MYSQL_PASSWORD=redhat -e MYSQL_BATABASE=items -e MYSQL_ROOT_PASSWORD=redhat -p 3306:3306 mariadb
+
+$podman ps : verify image
+
+Verify MySQL: 
+$mysql -u user1 -p --port=3306 --host=127.0.0.1
+
+Now we might enter the MariaDB console
+MariaDB> show databases : we can see the created database
+________________________________________________________________________
+Creating a persistant storage for image
+When we delete a container, the data inside the container gets deleted. SO we use a persistant storage
+
+1.Create a directory on host
+$mkdir -p webcontent/html/
+
+2. Have some data : echo "Hello World" > webcontent/html/index.html
+
+3. chmod 777 webcontent/html/index.html
+
+4. Run the container with share(mapping webcontent to www in container) : podman run -d --name myweb -p 5050:5050 -v /home/ec2-user/webcontent:/var/www:Z <imagename>
+
+--------------------------------------------------------------------------------
+Root Containers
+operated using root account
+# podman pull httpd
+
+Run a container
+# podman run -d --name web -p 8000:8080 <imagename>
+
+When it comes to root containers
+1. # cd /etc/systemd/system/ : location where system services are kept
+ENter the location
+
+2. Generate a Unit file using podman
+# podman generate systemd --name web --files --new
+
+Now we created a service file
+--new is used to remove container when service is stopped
+
+3. Check the service
+# podman ps
+
+5. Start the container(Initial State not started automatically)
+#systemctl start <servicename> : service which creted
+
+4. Stop the container
+#systemctl stop <servicename> : service which creted
+
+When we stop the container, the container is not in the system
+
+-----------------------------------------------------------------------
+Rootless containers
+
+Containers created by normal user
+Service file created in different location
+
+1. Launch the container
+# podman run -d --name webapp -p 3000:3030 <imagename>
+
+2. Generate a user service file
+mkdir -p .config/systemd/user
+
+cd in that directory
+
+3. Generate a config file
+# podman generate systemd --name webapp --files --new
+
+4. Start the service
+# systemctl --user start enable <servicename>
+
+5. Stop the service
+#systemctl --user stop <service>
+
+
+
+
+
+
+
+
+
+

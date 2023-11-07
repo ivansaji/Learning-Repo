@@ -1,0 +1,97 @@
+Managing compressed archives
+
+xz provides best compression ratio
+-------------------------------------
+Tar command
+c - create an archieve
+t- list condents in an archieve
+x- extract an archive
+f - file name
+v- verbosity
+
+To create an archive of file1, file2, file3
+# tar -cf archive.tar file1 file2 file 3
+
+To exract
+
+# tar -xf archieve.tar
+--------------------------------------------------------------------
+Compress compressed tar archieve
+
+.gz denotes a compressed tar archiveve
+
+z- for gzip compression (filename.tar.gz or filename.tgz)
+j - for bzip2 compression (filename.tar.bz2)
+J - for xz compression (filename.tar.xz)
+
+ex
+# tar -czf /etc/etcbkp.tar.gz /etc
+
+Working:
+# tar cvjf test1.tar.bz2 /var/www/
+# tar cvzf /root/test.tar.gz /etc/passwd
+
+---------------------------------------------------------------------
+Extract compressed tar
+
+for gzip
+# tar xzf file.tar.gz
+for xz 
+# tar xJf file.tar.xz
+
+eg:
+# tar xvzf /root/test.tar.gz
+
+extract to path
+# tar xvzf /root/test.tar.gz /home/ 
+--------------------------------------------------------------------
+
+Copy files between systems securely
+
+scp command transfers files to remote server securely
+utilises ssh server
+
+Copy file to remote server
+# scp /etc/yum.conf /etc/hosts server:/home/student
+
+Copy files from remote server
+# scp server:/etc/hostname /home/student/
+
+Copy directory from remote
+# scp -r root@serverX:/var/log/tmp /log/tmp/
+
+-------------------------------------------------------------------
+
+Transfer files remotely
+
+sftp is an interactive tool for uploading and downloading files to SSH server
+
+# sftp
+-get to download file
+-put
+-mkdir
+-rmdir
+-ls
+-cd
+
+-------------------------------------------------------------------
+Synchronize files and folders with rsync
+
+The difference between rsync and scp is that rsync copies only the differences while scp copies everything
+
+rsync option
+
+-r : sync recursively whole dir
+-l : list symbolic link
+-p : preserve permisisons
+-t : preserve time stamps
+-g : preserve group ownership
+-o : preserve the owner of files
+-D : synchronize device files
+
+Rsync normal use case:
+# rsync -av /etc/passwd root@192.168.121.102:/root/Desktop/passwd
+
+Rsync in case of aws
+# rsync -avL --progress -e "ssh -p 22 -i ivan.pem" test ec2-user@ec2-54-180-112-149.ap-northeast-2.compute.amazonaws.com:/home/ec2-user/new_folder
+

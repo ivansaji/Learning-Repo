@@ -1,0 +1,163 @@
+Managing Storage
+
+Two types of File system : MBR and GPT
+
+Master Boot Record - MBR
+
+	Scheme support 4 partitions
+	Maximum 15 partitions can be created by extending or logical
+	Partition size data is stored as 32 bit
+	max Disk size is 2 TiB
+
+GPT-Gerd Partition Table
+
+	128 Partitions possivle
+	64 Bit logical address
+	Max partion size of 8 ZiB
+	Offers redundancy
+---------------------------------------------------------
+To display partitions and mount points
+# df -h
+---------------------------------------------
+Managing Partitions
+
+#parted command is used.
+
+#parted /dev/vda print : print sybcommand to display partition table
+if no subcommand given, it opens a interactive session
+
+#parted /dev/vda unit s print : displays sizes in unit of sector (B for bytes)
+
+----------------------------------------------------------
+Writing Partition table on a new disk
+
+# parted /dev.vdb mklabel msdos : to write an MBR disk label to a disk
+
+# parted /dev/vdb mklabel gpt : to write a GPT disk label
+
+---------------------------------------------------------
+Creating MBR Partitions& GPT (interactive)
+	1. #parted /dev/vdb : specify disk to create partition
+	2. mkpart : subcomand to create partition
+	3 Give specifications of partiotion, start end etc (Size = End - Start)
+	4. quit
+
+run "# udevadm settle" which waits for system to detect new partition and create dir under /dev
+
+Creating MBR partition in a single command
+# parted /dev/vdb mkpart primary xfs 2048s 1000MB
+
+Creating GPT partition in a single command
+# parted /dev/vdb mkpart partition_name primary xfs 2048s 1000MB
+
+---------------------------------------------------------
+Deleting partitions
+	1. #parted /dev/vdb
+	2. print : list all partitons
+	3. rm <part.No> 
+	4. quit
+
+-------------------------------------------------------
+
+Creating Filesystems & formating
+
+#mkfs.xfs /dev/vdb1 : command to apply xfs filesytem to a block device
+
+#mkfs.ext4 /dev/vdb1 : command to apply ext4 filesytem to a block device
+--------------------------------------
+
+Mounting filesystems
+
+Manually mounting Filesystem
+# mount /dev/vdb1 /mnt
+------------------------------------------------------
+To mount file system persistantly, 
+
+create a directory under /mnt/
+eg:/mnt/data
+
+1.add an entry to "/etc/fstab" file
+2.Add a new entry in next line
+
+'''
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+# / was on /dev/sda1 during installation
+UUID=4097e8b2-4cf0-4f49-b122-b31a6412c3e1 /               ext4    errors=remount-ro 0       1
+
+# swap was on /dev/sda5 during installation
+UUID=d3a2b874-e555-4f51-9bc8-35305a435825 none            swap    sw              0       0
+
+'''
+The UUID can be obtained by command "# blkid" which lists UUID of all partitions.
+create a new entry
+	UUID=XXXXX <mount point> ext4 defaults 0 0
+eg:	UUID=XXXXX /mnt/data ext4 defaults 0 0
+
+3. reload the deamon using "syemctl daemon-reload" for systemd to register new configuration
+
+the dump field in fstab: dump command used to backup the partition(0 is the priority)
+fsck check field: last : known as fsck order field, determines fsck command should be run at system boot to verify files are clean
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+To Unmount a partition
+
+#umount /mnt/data
+
+-------------------------------------------------------------------
+Managing Swap Space
+
+Swap space is an area of disk under control of linux kernel memory management system
+
+RAM + SWAP = Virtual Memory
+
+Ram|		Swap Size		Swap Size(allow hibernation)
+<=2,		2x				|3x
+2to8		Same as Ram			2x
+8 and 64	atleast 4		1.5x
+more than 64	atleast 4		Hibernation not recommended
+
+--------------------------------------------------------------------------------------------------------------
+Creating Swap Partition
+#mkpart
+	partition name : swap1
+	filesystem type: linux-swap
+
+---------------------------------------------------------------------
+formating device
+#mkswap /dev/vdb2
+
+-------------------------------------------------------------------------
+
+Activating Swap
+#swapon /dev/vdb2
+
+Deactivating swap
+#swapoff /dev/vdb2
+
+#swapon -a : activate all swap
+
+Swap activation on boot, add to fstab
+UUID=XXXX swap swap defaults 0 0
+
+free -h : display virtual memory status
+
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

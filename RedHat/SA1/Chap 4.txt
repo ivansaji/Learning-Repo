@@ -1,0 +1,33 @@
+date > /tmp/new.txt
+This saves the command (date) result into text file
+
+if we provide dat > /tmp/new.txt, nothing will be written, dat is not a valid command and bash prompts dat: Command not found
+
+If we want to write write the error only into file without displaying error on bash,ie error msg will be writtern to file, use
+
+dat 2> /tmp/new.txt
+
+if the command runs successfully, no error hence nothing will be written
+
+This will overwrite the txt file. 
+If we wish to perform an append, then use
+da 2>> /tmp/new.txt
+-----------------------------------------------------------------------
+"|" is used to pipeline, ie one command output servers as input to other
+
+cat /etc/passwd | grep root
+
+this performs grep root on cat /etc/passwd
+
+-----------------------------------------------------------------------
+Vim : terminal based text editor
+to open a file: vim file.txt
+
+now the file opens.... (opens in command mode)
+navigate using arrow keys
+press "i" for insert mode
+now type data
+press escape to enter command mode, type ":wq" to save and exit
+":qa!" to exit discarding changes
+":q" to exit if no changes made
+------------------------------------------------------------------------

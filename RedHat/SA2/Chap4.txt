@@ -1,0 +1,56 @@
+Controlling Access to files with ACLs
+
+Interpreting Files
+Access Control List(ACL) 
+
+ACL is used to give special permission to single users in others group.
+Helps to add permission to single group member by mentioning their name(eg manu in others)
+chown gives permission as a group not to a single user
+used to give permission to named users
+
+#ls -l lists only minimal ACL settings
++ sign at end of 10 char permission(RWXRW----+) indicates extended ACL permission. 
+
+To display ACL Settings on a file
+# getfacl file/directory
+
+To set ACL permission
+# setfacl -m user:username:permission file
+or
+# setfacl -m u:username:permission file
+(u/users , o/other, g/group)
+eg:# setfacl -m user:mary:rx file
+
+To set ACL permission Recursively
+# setfacl -R -m user:username:permission file
+eg:# setfacl -R -m user:mary:rx file
+
+# setfacl -m group:groupname:permission directory
+
+To set as default mask(read and execute permission)
+# default:m::rx dir/
+
+Named user granted initial read permission for new files
+# default:user:mary:rx dir/
+
+--------------------------------------------------------------
+
+The ACL Mask
+
+The ACL mask defines the maximum permission that you can grant to named users, the group owner and named groups
+
+All files and directory that implements ACL will have an ACL mask
+
+------------------------------------------------------------
+Deleting ACL permissions
+
+#setfacl -x u:name,g:name file : deleting specific ACL(-x)
+#setfacl -b file : delete all ACLs on file or dir
+
+Deleting all default ACL permissions on a dir
+#setfacl -k dir
+
+
+
+
+

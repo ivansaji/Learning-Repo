@@ -1,0 +1,140 @@
+Managing Logical Volumes
+
+Ceating Logical Volumes
+
+If a disk starts to fail, aa replacement disk can be registered as a physical volume with the volume group and the logical volume extents can be migrated to a new disk
+
+Logical Volume Management(LVM) Definitions
+	->Physical Devices :
+	->Physical Volume(PV) : Must initialize a device as a physical volume before using it in LVM system
+	
+	->Volume Groups(VG): Volume groups are storage pools made up of one or more physical volumes. This is the functional equivalent of whole disk in basic storage. PV can only be allocated to a single VG
+	
+	->Logical Volumes(LV) : created from physical extends in a volume group. LVs are a collection of Logical extends which map to physical extents.
+	
+--------------------------------------------------------
+Creating a Logical volume
+
+1. Prepare the physical device
+	#parted -s /dev/vdb mkpart primary 1MiB 769MiB
+	#parted -s /dev/vdb set 1 lvm on
+
+2. Create a physical volume
+	#pvcreate /dev/vdb1
+
+3.Create a volume group
+	#vgcreate vg01 /dev/vdb1
+
+4.Create a logical Volume
+	#lvcreate -L 128M : Size the logical volume to exactly 128MiB
+	#lvcreate -l 128 : Size the logical volume to exactly 128 extents
+
+5. Add the filesystem
+	#mkfs -t xfs /dev/vg01/lv01
+	#mkdir /mnt/data
+	
+	Add an entry to /etc/fsatb file
+		/dev/vg01/lv01 /mnt/data xfs defaults 0 0
+	
+	#mount /mnt/data or #mount -a
+	
+--------------------------------------------------------
+Removing a logical volume
+
+1. Unmount lv
+	#umount /mnt/data
+
+Comment the line in fstab
+
+2. Remove lv
+	#lvremove /dev/vg01/lv01/
+
+3. Remove vg
+	#vgremove vg01
+
+4. Remove pv
+	#pvremove /dev/vdb1
+
+--------------------------------------------------------
+
+Reviewing LVM status information
+
+Display physical volumes
+	#pvdisplay /dev/vdb1
+
+Display VG
+	#vgdisplay vg01
+
+Display LV
+	#lvdisplay /dev/vg01/lv01
+
+-----------------------------------------------------------
+
+Extending logical volumes
+
+1. Prepare physical device and create the physical volume
+	#parted -s /dev/vdb mkpart primary 1027MiB 1539MiB
+	#parted -s /dev/vdb set 3 lvm on
+	#pvcreate /dev/vdb3
+	
+2. Extend the volume group
+	#vgextend vg01 /dev/vdb3
+
+3. Verify that the new space is available
+	#vgdisplay vg01
+
+------------------------------------------------------------
+Reducing a Volume Group
+
+Move Physical Extents
+# pvmove /dev/vdb3
+
+Reduce volume fgroup
+#vgreduce vg01 /ev/vdb3
+
+---------------------------------------------------------
+Extending a Logical Volume and XFS filesystem
+
+Extending :
+#lvextend -L +300M /dev/vg01/lv01
+
+Extend the file system
+#xfs_growfs /mnt/data
+
+--------------------------------------------------------
+Extending a Logical Volume and Ext4 filesystem
+
+#lvextend -I +extents /devvgname/lvname
+
+Extend the filesystem
+	#resize2fs /dev/vg01/lv01
+
+----------------------------------------------------------
+Extend a logical volume and Swap space
+
+Verify the volume group has space available
+	#vgdisplay vgname
+
+Deactivate the swap space
+	#swapoff -v /dev/vgname/lvname
+
+Extend the logical volume
+	#lvextend -l +extents /dev/vgname/lvname
+
+Format logical volume as swap
+	#mkswap /dev/vgname/lvname
+Activate the swap space
+	#swapon -va /dev/vgname/lvname
+
+
+
+
+
+
+
+
+
+
+
+
+

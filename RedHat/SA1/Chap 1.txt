@@ -1,0 +1,57 @@
+Day 1
+
+Shell Prompt : 
+username@hostname # --> Root User
+username@hostname # --> Normal User
+
+To get the date
+>>date
+To get date only
+>>date +%x
+To get time only
+>>date +%r
+
+To check current user
+>>whoami
+
+To addnew user
+>>useradd user123
+
+To set passwd for a user
+>>passwd user123
+
+To get word count
+>>wc <file>
+- first number indicates number of lines
+-2nd indicates no of words 
+-3rd no of characters
+
+To get information on a particular file
+>> file <filename>
+
+To display content of file
+>> cat <file>
+
+To provide content to file(overwrite)
+>> cat > ivan.txt
+
+To append content to file
+>> cat >> ivan.txt
+
+To display last 10 lines of a file
+>> tail filename
+
+To display last n lines
+>> tail -n 2 filename
+
+To display first n lines
+>> head filename
+
+To get the history of commands
+>>history
+
+To re run the command from history...
+find the history number of command from history
+>>!historynumber
+
+

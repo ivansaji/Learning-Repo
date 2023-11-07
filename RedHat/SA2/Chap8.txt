@@ -1,0 +1,128 @@
+Implementing Advanced Storage Features
+
+Managing layered storage with stratis
+
+Stratis is a storage solution released by RHEL8, which runs as a service that manages pools of physical storage devices and transparently creates and manages volumes for the file systems being used
+
+In Volume managed file system, file systems are built inside shared pools of disk devices using a concept known as thin provisioning
+
+
+Managing Thin-provisioned File systems
+
+To manage the thin-provisioned file systems using the Stratis storage management solution, install the stratis-cli and statisd packages
+
+
+Physical drive -> POOL -> Filesystem
+-----------------------------------------------------------------
+Install packages
+# yum install stratis-cli stratisd
+
+Activate service
+# systemctl enable --now stratisd
+
+Create pool of one or more block devices
+#stratis pool create pool1 /dev/vdb
+
+Display Stratis pool list
+# stratis pool list
+
+To add additional block of devices to a pool
+# stratis pool add-data pool1 /dev/vdc
+
+To view the block of devices of a pool
+# stratis blockdev list pool1
+
+To create dynamic and flexible file system from a pool
+# stratis filesystem create pool1 filesystem1
+
+Take a snapshot of filesystem
+# stratis filesystem snapshot pool1 filesystem1 snapshot1
+
+List available file systems
+# stratis filesystem list
+
+To display UUID of filesystem so that we can add to fstab
+#lsblk --output=UUID /stratis/pool1/filesystem1
+
+in Fstab file
+UUID=XXXX /dir1 xfs defaults,x-systemd.requires=stratisd.service 0 0
+
+x-systemd.requires=stratisd.service mount option delays mounting the file system until systemd starts the stratisd.service during boot process
+
+-------------------------------------------------------------------
+
+Compressing and Deduplicating storage with VDO
+
+VDO - Virtual Data Optimizer introduced in RHEL8
+VDO is a linux device mapper driver that reduces disk space usage on block devices, minimizes replication of data and saving disk space
+
+Two modules
+1. kvdo : control data compression
+2. module for deduplication
+
+
+Logical volumes create using VDO are called VDO volumes. Similar to disk partitions
+If you do not specify the logical size while creating the colume, the vdo assumes actual physical size as the lofical size of the volume
+
+---------------------------------------------------
+Install vdo and kmod-kvdo
+#yum install vdo kmod-kvdo
+
+Create a VDO volume
+#vdo create --name-vdo1 --device=/dev/vdd -vdoLogicalSize=50G
+
+Comand displays report on VDO system
+#vdo status --name=vdo1
+
+Display list of VDO
+# vdo list
+
+-------------------------------------------------------
+format and mount
+
+#mkfs.xfs -K /dev/mapper/vdo1
+#udevadm settle
+#mkdir /mnt/vdo1
+#lsblk --output=UUID /dev/mapper/vdo1
+
+add to fstab
+UUID=XX /mnt/vdo1 xfs defaults,x-systemd.requires=vdo.service 0 0 
+
+mount -a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

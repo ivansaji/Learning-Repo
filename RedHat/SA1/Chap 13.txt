@@ -1,0 +1,114 @@
+Installing and Updating software packages(RPM)
+
+Managing RPM packages
+To disaplay all installed packages
+# rpm -q -a
+
+To check details of package
+# rpm -q yum
+
+To get more detailed info of package
+# rpm -q -i firefox
+
+To install package using RPM
+# rpm --ivh file.rpm
+--------------------------------------------------------------
+Installing and updating(Yum)
+
+Displays installed and available packages
+# yum list
+
+Search a package
+# yum search KEYword
+
+Get detailed info on package
+# yum info package
+
+Install a package
+# yum install package
+
+Update a package
+# yum update package
+
+Update whole packages in s/m
+# yum update
+
+To remove packaghe
+# yum remove package
+
+---------------------------------------------------------------
+Yum Packag group commands
+
+List all group
+# yum group list
+
+Get information on displayed group
+# yum group info <grp_name>
+
+Install a group package
+# yum group install <grp_name>
+
+----------------------------------------------------------------
+Package Transaction history can be found at : /var/log/dnf.rpm.log
+
+# tail /var/log/dnf/rpm.log
+
+Display summary of install or remove
+# yum history
+
+To reverse a transaction
+# yum history undo <id>
+
+-----------------------------------------------------------------
+Enabling Yum Repositories
+
+Repository files have the location of packages
+
+To create a repo file
+Location : /etc/yum.repos.d/
+with .repo extension
+
+Content of repo file
+_________________________________________
+	name=added from:url		|
+	baseurl=<url>			|
+	enabled=1			|
+	gpgcheck=0			|
+________________________________________|
+
+example
+
+_________________________________________
+	name=added sunimon		|
+	baseurl=http://sdsds.org	|
+	enabled=1			|
+	gpgcheck=0			|
+________________________________________|
+
+gpg check means group privacy guard which is a signature check. We disable the signature check
+----------------------------------------------------------------------
+
+Repository Commands
+
+To view all available repositories
+# yum repolist all
+
+To enable a repository
+# yum-config-manager --enable rhel-7-public-beta-debug-rpms
+
+We can also create a repository directly without creating repo file by
+# yum-config-manager --add -repo="<url>"
+This creates a configuration file
+
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+

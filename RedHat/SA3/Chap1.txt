@@ -1,0 +1,22 @@
+Two types of machine
+1. Control node : Ansible is installed and run, also has copeies of ansible project
+2.Managed Hosts : Listed in the inventory, which also organizes those systems into grups for easier management
+------------------------------------------------------------------------
+Setup
+Create 5 AWS instances, 
+-> Control Node
+-> system 1,2,3,4
+
+change the hostname of each machine using hostnamectl set-hostname "controlnode"
+
+open file /etc/hosts
+------------------------------------------------------------------------
+Installing Ansible:
+Ansible is installed in control node
+Python 3 is reqd
+
+command
+# yum install ansible
+------------------------------------------------------------------------
+
+

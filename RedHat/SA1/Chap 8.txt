@@ -1,0 +1,29 @@
+Controlling Services and daemons
+
+To check status of a daemon
+# systemctl status <service>
+eg : # systemctl status sshd
+
+To start a service
+# systemctl start <service>
+
+To stop a service 
+# systemctl stop <service>
+
+To enable a service
+# systemctl enable <service>
+
+To disable a service
+# systemctl disable <service>
+
+To Restart a service 
+# systemctl restart <service>
+
+To create a mask of service
+# systemctl mask <service>
+
+To unmask a service
+# systemctl unmask <service>
+
+To list dependencies of a package or service
+# systemctl list-dependencies <service/package>

@@ -1,0 +1,37 @@
+To list out the activities
+# ps
+
+To list out processes of users
+# ps -aux
+
+To long list processes
+# ps -lax
+
+To list all process
+# ps -ef
+----------------------------------------------------------------
+To list process(with repetitive updates)
+# top
+----------------------------------------------------------------------
+To display process as a tree
+# pstree
+
+To display process id also
+# pstree -p
+
+------------------------------------------------------------
+To search processes for particular user
+
+# pgrep -l -u <username>
+---------------------------------------------------------------
+To list currently logged in users
+w -f
+------------------------------------------------------
+To kill a process
+
+identify process
+# kill -l
+
+kill a process
+# kill <pid>
+----------------------------------------------------------

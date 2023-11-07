@@ -1,0 +1,210 @@
+Accessing Network attached storage
+
+Mounting network attached storage wth NFS
+
+Installing nfs
+#yum install nfs-utils
+
+Enable NFS service
+# systemctl enable --now nfs-server
+
+NFS : Network file system
+------------------------------------------------------
+Mounting NFS Shares
+
+1. The administrator of the NFS client system can identify NFS shares by mounting the root directory of NFS server and exploring the exported dir
+
+# mkdir mountpoint
+eg: mkdir /share
+
+# mount serverb:/ mountpoint
+
+# ls mountpoint
+
+2. use mkdir to create mount point in suitable location
+# mkdir -p mountpoint
+
+3. To mount an nfsshare
+
+# mount -t ntfs -o rw,sync serverb:/share mountpoint
+
+-----------------------------------------------------------
+To mount persistantly
+
+In fstab file
+
+serverb:/share /mountpoint nfs rw,soft 0 0
+
+# mount /mountpoint
+
+---------------------------------------------------------
+Unmounting NFS shares
+
+#umount mountpoint
+go to fstab and comment the line
+
+--------------------------------------------------------
+nfsconf TOOL
+
+nfsconf tool to manage NFS client and server configuration files under NFSv4 and NFSv3. Config file :/etc/nfs.conf
+
+To set a value for the key in specified section
+# nfsconf --set nfsd vers4.2 y
+
+To retreive value of key in specified section
+# nfsconf --get nfsd vers4.2
+
+To unset the value for the key in the specified section
+# nfsconf --unset nfsd vers4.2
+
+------------------------------------------------------------------------
+
+Configure an NFSv4-only client
+
+In the /etc/nfs.conf configuration file
+
+1. Start by disbling UDP and other NFSv2 and NFSv3 related keys
+
+#nfsconf --set nfsd udp n
+#nfsconf --set nfsd vers2 n
+#nfsconf --set nfsd vers3 n
+
+2. Enable TCS and NFSv4 related keys,
+
+#nfsconf --set nfsd tcp y
+#nfsconf --set nfsd vers4 y
+#nfsconf --set nfsd vers4.0 y
+#nfsconf --set nfsd vers4.1 y
+#nfsconf --set nfsd vers4.2 y
+
+--------------------------------------------------------------------------
+
+Automounting Network attached share
+
+"autofs" is a service that automatically mounts NFS shares on-demand and will automatically unmount NFS shares when they are no longer being used.
+
+Benifits of Automounter
+> No root previlages
+> available to all users
+> shares are not permanently connected like fstab
+> configured on client side, no server side config reqd
+> same options as mount command
+> NFS is default automounter network file system, but the network fle systems can be automatically mounted
+
+Create an automount
+
+Configuring an automount is a multistep process
+
+1. Install the autofs package
+# yum install autofs
+
+2. Add a master map file to /etc/auto.master.d
+#vim /etc/auto.master.d/demo.autofs
+/shares /etc/auto.demo
+
+3.Create the mapping files. Each mapping file identifies the mount point, mount options, and source location to mount for a set of automounts
+# vim /etc/auto.demo
+work -rw,sync serverb:/shares/work
+
+work is the mountpoint
+
+4. Start and enable the automounter service
+# systemctl enable --now autofs
+
+--------------------------------------------------------------------------
+Direct maps
+
+Direct maps are used to map an NFS share to an existing absolute path mount point
+
+# /- /etc/auto.direct
+
+The content for the /etc/auto.direct file might appear as follows
+# /mnt/docs -rw,sync serverb:/shares/docs
+
+-------------------------------------------------------------------------
+Indirect wildcard maps
+
+When an NFS server exports multiple subdirectories within a directory, then automounter can be configured to access any one of those using a single mapping entry
+
+The content for the /etc/auto.demo file might appear as follows
+# * -rw,sync serverb:/shares/&
+
+-------------------------------------------------------------------------
+Demonstration
+
+Accessing network attached storage (Server side)
+
+Installing NFS 
+# yum install nfs-utils -y
+
+Enable the service
+#systemctl enable --now nfs-server
+
+Open config file
+#vim /etc/nfc.conf
+
+In the section [nfsd]-configure server
+set the value y or n to set version
+
+We create an automounted directory
+# mkdir /share
+# vim /etc/exports
+
+    /share_dir <client-ip/hostname(permissions-ro,rw)> 
+    eg: /share 192.168.1.43(rw)
+
+To export the file
+# exportfs -rv
+
+To add firewall to nfs
+
+if no firewall, install it
+#yum install firewalld -y
+#systemctl start firewalld
+#systemctl enable firewalld
+
+adding nfs to firewall
+
+# firewall-cmd --permanent --add-service=nfs
+# firewall-cmd --permanent --add-service=mountd
+# firewall-cmd --permanent --add-service=rpc-bind
+# firewall-cmd --reload
+# systemctl restart nfs-server
+
+------------------------------------
+Client side
+
+1.Install AutoFS
+#yum install autofs -y
+
+2.Start autofs service
+# systemctl start autofs
+
+3.Enable autofs service
+#systemctl enable autofs
+
+4.Create an autofs config file(*.autofs) under /etc/auto.master.d/
+#vim /etc/auto.master.d/new.autofs
+
+5.In the file, add the line
+/mountpoint /file
+
+eg: /mnt /etc/auto.misc
+
+6. In the file /etc/auto.misc
+Add new line to set up the share
+format: /folder -fstype=filesystemtype,permissions,nfsvers=nfsversion <server_ip>:/folder
+
+eg: /share -fstype=nfs,ro,nfsvers=3 <server_ip>:/share
+
+7. Restart autofs
+#systemctl restart autofs
+
+
+
+
+
+
+
+
+

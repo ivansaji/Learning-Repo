@@ -1,0 +1,83 @@
+Managing Network Security
+
+Managing Server Firewalls
+
+Linux kernel includes netfilter, a framework for network traffic operations such as packet filtering, network address translation and port translation.
+
+Linux kernel also includes nftables, a new filter and packet classification subsystem that enhanced portion of netfilter's code
+
+nftables is faster
+
+Netfilter is configured through multiple utility frameworks, including iptavles, ip6tables, arptables and ebtables which are now depricated
+
+-----------------------------------------------------------------------------
+Firewalld
+
+Firewalld is a dynamic firewall manager, and front end of nftables
+
+Untill introduction of nftables, firewalld used iptables command to configure netfilter directly
+
+Firewalld makes it simpler by classifying all network traffic to zones
+
+Prefedined Zones : trusted , home , internal, work, public, external, dmz, block, drop
+
+Predefined Services : ssh(22) ,dhcpv6-client(546), samba-client(137,138), mdns(5353)
+
+-------------------------------------------------------------------------------
+
+Configuring firewalld from commandline
+
+firewall-cmd command interacts with firewalld dynamic firewall manager
+
+All commands will work on the runtime configuration, unless the --permanent option is psecified
+
+If permanent option is specified, we must activate the setting by running firewall-cmd --reload command
+
+#firewall-cmd --get-default-zone : query current zone
+#firewall-cmd --set-default-zone=ZONE : set the required zone
+#firewall-cmd -- get-zones: get list of zones
+
+#firewall-cmd --list-all : list all configured interfaces,sources,services,ports for all zones ( if --zone=ZONE) is given, we get details for only that zone
+
+#firewall-cmd --add-service=SERVICE [-zone=ZONE] : allow trafic to service. If no --zone is given, default zone is used.
+
+#firewall-cmd --add-port=PORT/PROTOCOL [--zone=ZONE] : allow traffic to PORT/PROTOCOL
+
+#firewall-cmd --remove-service=SERVICE [--zone=ZONE] : remove service
+
+#firewall-cmd --remove-port=PORT [--zone=ZONE] : remove port
+
+#firewall-cmd --reload : reload the firewall
+
+--------------------------------------------------------------------------------
+
+Controlling SELinux Port labelling
+
+
+SELinux does more than file and process labelling
+Network traffic is also tightly enforced by SELInux policy
+
+Whenever a process wants to listen on a port, SELinux checks to see whether the  label associated with that process(the domain) is allowed to bind that port label.
+
+#semanage port -l : To list current port label assignments
+#semanage port -l | grep ftp
+
+#semanage port -a -t port_label -p tcp | udp PORTNUMBER : To assign new port labels
+eg: #semanage port -a -t gopher_port_t -p tcp 71
+
+#semanage port -d -t gopher_port_t -ptcp 71 : Removing a custom label port
+
+#semanage port -m -t http_port_t -p tcp 71 : modifying port bindings
+
+
+
+
+
+
+
+
+
+
+
+
+

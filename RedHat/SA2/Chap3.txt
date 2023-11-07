@@ -1,0 +1,46 @@
+Tune System Performance
+
+Tuned application profiles (2 types)
+->Power Saving Profiles
+->Performance Boosting Profiles
+    - Low latency for storage and network
+    - High Throughput for storage and network
+    - Virtual machine Performance
+    - Virtualization host Performance
+
+Installing tuned: yum install tuned
+Enable tuned: systemctl enable --now tuned
+
+#tuned-adm command is used to change settings of tuned daemon
+
+#tuned-adm active -> Display current active profiles
+
+#tuned-adm list -> list all available tuning profiles
+
+#tuned-adm profile profilename -> To switch the active profile to a different one that better matches the system's current tuning requirements
+
+#tuned-adm recommend -> Recommend a tuning profile for the system
+
+#tuned-adm off -> Turn off Tuned activity
+---------------------------------------------------------------
+Influencing Process Scheduling and Multitasking
+
+Each proces has a priority. Nice value of a process shows its priority
+Nice value range -> -20 to 19
+Higher nice level indicate lower priority
+
+Start a job in backgraound with default nice
+#nice <command> &
+eg : nice tree /etc/ &
+
+To start ith user defined nice level and backgraound running
+#nice -n 15 tree /etc/ &
+
+To Display nice level of process
+#ps -o pid
+#nice pid
+
+To change nice level of Existing process(process with id 3521)
+#renice -n 19 pid
+eg: renice -n 19 3521
+------------------------------------------------------------------

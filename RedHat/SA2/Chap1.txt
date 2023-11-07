@@ -1,0 +1,60 @@
+Improving command line productivity
+
+For loop, bash
+
+for VARIABLE in LIST
+do 
+COMMAND $VARIABLE
+done
+
+eg:
+for HOST in host{1..4}
+do
+echo $HOST
+done
+
+---------------------------------------------------------------------------
+If Condition
+
+if[condition];then
+statement
+statement
+fi
+
+eg:
+
+systemctl is-active psacct > /dev/null 2>&1
+if [$? -ne 0];then
+sudo systemctl start psacct
+fi
+
+----------------------------------------------
+If elif else
+
+if [condition];then
+stmt
+elif [condition];then
+stmt
+else
+stmt
+fi
+
+--------------------------------------------------
+
+Matching Text with regular Expressions
+
+Matching with grep
+
+# grep "computer" /usr/share/file
+
+Find all lines starting with pattern
+#grep "^computer" file1
+
+Find all lines ending with pattern
+# grep "$computer" file1
+
+use case insensitive
+
+#grep -i "computer" file
+
+

@@ -1,0 +1,142 @@
+Scheduling Future Tasks - Single Time
+
+"at" command is used to schedule jobs.
+
+# atq or # at -l : used to get an overview of pending jobs for current user
+
+# at -c JOBNUMBER : to inspect actual commands that will run when job is executed
+
+# atrm JOBNUMBER : command removes a sheduled JOB
+
+-------------------------------------------------------------------------
+Scheduling Recurring User Jobs
+
+isong cron
+
+#crontab -l : list the jobs for current user
+
+#crontab -r : removes all jobs for current user
+
+#crontab -e : Edit jobs for current user
+
+#crontab filename: Removes all jobs and relace with jobs read from filename. if no name specified stdin is used
+
+To set a cronjob format is: (minutes hours day_of_month Month Day_of_week command)
+Eg: m h  dom mon dow   command
+
+if * comes in any field, it means always. if * in min, executed every minutes
+
+eg: x-y is for a range ie 5-7 indicates 5am to 7am
+x,y indicates command run at 5 and 7
+*/x indicates interval of X, ie */7 in minutes indicates command run evry 7 minutes
+
+This should be saved in file
+
+Eg: 0 9 2 2 " /usr/local/bin/yearly_backup : run exaclty at 9 am on every year feb 2nd
+
+--------------------------------------------------------------------------
+
+Scheduling Recurring System Jobs
+
+Used by system admins... 
+best practice is to run from system account.
+additional field with username which sets crons from user from admin level
+
+Everything is done in /etc/crontab and /etc/cron.d/
+The file in /etc/cron.d/ can also be used (Uses Executable shell script)
+
+Cron jobs to be run hourly, weekly etc can also be given as
+/etc/cron.hourly/script.sh
+/etc/cron.daily/script.sh
+
+---------------
+/etc/anacrontab : this file is implemented to make sure that important jobs always run and not skipped accidenlty becuase the the system was turned off or hibernating when job should have executed.
+
+It contains 4 fields : period in days, delay in minutes, Job identifier, command
+
+
+------------------------------------------------------------------------
+Managing temporary Files
+
+Volatile Directories(System clears it on poweroff or reboot)
+RHEL include a new tool called systemd-tmpfiles to manage temporary Directoriesand files.
+
+When systemd starts a system, one of the 1st service units launched is systemd-tmpfiles-setup
+
+The service runs the command systemd-tmpfiles --create --removes
+
+This command reads config files form 
+    /usr/lib/tmpfiles.d*.conf
+    /run/tmpfiles.d/*.conf
+    /etc/tmpfiles.d/*.conf
+    
+Anyfiles or dir marked for deletion will be deleted and created if correct permissions are given
+-----------------------------------------------------------------------
+
+Cleaning and Creating temporary files manually
+
+#systemd-tmpfiles --create : creating files and Directories
+#systemd-tmpfiles --clean : purge all files which have not been accessed,changed or modifild
+
+Cleaning temporary files with systemd timer
+
+To ensure long running system do not fill up disks with stale data, systemd timer unit called systemd-tmpfiles-clean.timer triggers systemd-tmpfiles-clean.service on regular intervals which executes systemd-tmpfiles --clean command
+
+#systemctl cat systemd-tmpfiles-clean.timer : to view contents of systemd-tmpfilesclean.timer configuration file
+------------------------------------------------------------------------
+Demonstration
+
+Scheduling one time jobs using "at"
+
+[root@rhel ec2-user]# at 08:52
+warning: commands will be executed using /bin/sh
+at> touch /root/newfile1.txt   -> This is the action to be done
+To exit from at prompt press ctrl+d
+
+To list at jobs
+# at -l
+
+To get deailed info on an at job
+# at -c <job_num>
+
+last of output shows action
+
+To remove a job set by at
+# atrm <job_num>
+
+---------------------------------------------
+
+Scheduling using crontab
+
+To set a cron job
+# crontab -e -> Opens a file to set min,hrs etc, add to end of file
+
+Inside the file... we schedule a job_num
+*/2 * * * * date >> /root/testfile
+This prints date to a file 2 times a min
+
+To set a job at 08:59
+59 08 * * * rm -rf /tmp/*
+
+
+To view crons 
+#crontab -l
+
+To remove all cron jobs
+#crontab -r
+
+To remove single cron job -> edit the file crontab -e and remove the job
+
+To set cron for a user
+#crontab -eu username
+
+To list jobs for user
+#crontab -lu username
+
+We can also specify cron jobs to be run as a script by placing it in /etc/cron.weekly or cron.daily etc etc
+
+We can also use anacrontab
+
+---------------------------------------------
+
+

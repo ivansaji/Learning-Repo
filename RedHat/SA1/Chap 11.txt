@@ -1,0 +1,95 @@
+Managing Networking
+
+To display IP address IPv4 and IPv6
+# ifconfig
+
+Todisplay Hostname
+# hostname
+--------------------------------------------------------------------------
+IPv4 address consists of network part and host address part
+IPv4 is a 32 bit address seperated by .
+xxx.xxx.xxx.xxx
+
+IPv6 is a 128 bit adress seperated by :
+xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx
+eg: 2001:0000:0000:0A78:0000:0000:0000:0334
+
+
+Rules to write ipv6 address as short:
+1. Omit all leading zeros
+eg: 2001:---0:---0:-A78:---0:---0:---0:-334 => 2001:0:0:A78:0:0:0:334
+
+2. Reresent 1 or more consecutive quartets of all hex 0s with double colon but only one such occurance allowed
+eg : 2001::A78:0:0:0:334  (or) 2001:0:0:A78::334
+
+eg 2: 2001:0000:0000:0000:0000:0000:0000:0000 => 2001::
+
+in IPv6 first 64 bits represent network part and rest 64 shows host part
+2001:0000:0000:0A78:0000:0000:0000:0334 /64
+--------------------------------------------------------------------------
+Validating N/W configuration
+
+to show IP address
+# ip addr show
+
+to show statisics about network
+# ip -s link show
+
+to show routing information
+# ip route
+
+to show ipv6 routing table
+# ip -6 route
+
+used to test connectivity
+# ping 172.155.443.555
+
+Ipv6 version of ping
+# ping6 2001:0db8:0:1::1
+
+To limit no of packets send
+# ping -c 3 172.25.0.254
+
+To trace path of UDP packet
+# tracepath access.redhat.com
+
+IPV6 version of tracepath
+# tracepath6 2001:0db8:0:1::1
+
+---------------------------------------------------------------------------
+
+Configuring Networking with nmcli
+
+To display a list of all connections
+# nmcli con show
+
+To list only active connections
+# nmcli con show -active
+
+Specifying connection ID to see the details of that connection
+# nmcli con show "static-eth0"
+
+Show device status and details
+# nmcli dev status
+
+To Reload Connection
+# nmcli con reload
+
+To De-Activate Connection
+# nmcli con down "System eth0"
+
+To activate connection
+#nmcli con up "System eth0"
+
+To change IPv4 address using nmcli
+# nmcli connection modify ens160 ipv4.addresses 192.168.1.110/24 ipv4.method manual 
+
+To change ipv6 address using nmcli 
+# nmcli connection modify ens160 ipv6.addresses fe80::20c:29ff:fe59:5ad5/64 ipv6.method manual
+
+-----------------------------------------------------------------------
+To have a graphical setup for modifying Newtwork connection
+# nmtui
+--------------------------------------------------------------
+Change hostname 
+# hostnamectl set-hostname rhel

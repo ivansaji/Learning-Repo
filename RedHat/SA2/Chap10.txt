@@ -1,0 +1,123 @@
+Controlling the boot process
+
+Selecting the boot target
+
+When machine is powered on, the system firmware runs Power on Self Test(POST). The firmware searches for bootable device. either configured in UEFI boot firmware or by searching Master Boot Record(MBR) on all disks inorder configured in the BIOS.
+
+The system firmware loads a bootloader from the disk then passes control to boot loader
+
+Default bootloader for RHEL is GRUB2. Installed using grub2-install command
+
+GRUB2 loads its information from /boot/grub2/grub.cfg and displays a menu where u can select which kernel to boot
+
+/etc/grub.d/ (dir)or /etc/default/grub (file) : configure grub
+#grub2-mkconfig : generate /boot/grub2/grub.cfg file
+
+After selecting a kernel, the bootloader loads the kernel and initramfs from disk and places them in memory.
+initamfs is an archive containing the kernel modules for all the hardware required at the boot, initialization scripts etc.
+
+#dracut and #lsinitrd commands are used to inspect initramfs file
+Dracut is configured in /etc/dracut.conf.d/ directory
+
+initramgs initiates all hardware and executes /sbin/init
+/sbin/init is a link to systemd
+
+systemd executes all units under initrd.target which includes mounting root file system on disk onto /sysroot directory
+
+#systemctl poweroff : shutdown command
+
+#systemctl reboot : Restart
+
+poweroff and reboot are symbolic links of systemctl equivalents
+
+--------------------------------------------------------------------------
+Selecting Systemd target
+
+Systemd target is a set of systemd units, that make the system start in desired state.
+
+graphical.target : Supports multiple users,graphical and text based logins
+
+multi-user.target : supports multiple users, text based logins
+
+rescue.target : sulogin prompt, basic system initialization completed
+
+emergency.target : sulogin(simple User Login) prompt, uintamfs pivot complete and system root mounted on/read only
+
+Managing Targets
+
+#systemctl list-units --type=target --all : to list available targets
+#systemctl get-default : To display default target
+#systemctl set-default graphical.target : change default target to graphical
+
+----------------------------------------------------------------------------
+
+Resetting the root password from bootloader
+
+
+1. Reboot the system
+2. Interrupt the boot loader countdown by pressing any key except enter
+3. Move the curser to the kernel entry to boot
+4. Press e to edit selected entry
+5. Move the curser to the kernel command line( the line that starts with linux)
+6. Append rd.break with that option, the ststem breaks just before system hands control from initramfs
+7. Press ctrl+x to boot with changes
+
+From here use the following
+8. Remount the /sysroot as read/wrte
+    #switch_root:/# mount -o remount,rw /sysroot
+
+9. Switch into a chroot jail,where /sysroot is treated as the root of the file-system tree
+    #switch_root:/#chroot /sysroot
+
+10. Set root passwood
+    #sh-4.4# passwd root
+
+11. Make sure that all unlabelled files, including /etc/shadow get relabelled
+    #sh-4.4# touch /.autorelabel
+
+12. type exit twice,at this point system performs relabel and reboots again  
+
+--------------------------------------------------------------------------
+
+Selecting different target at boot time
+
+1. Perform steps 1 to 5 in resetting password
+
+2. Append systemd.unit=target.target
+eg: systemd.unit=emergency.target
+
+3. Press ctrl+x to boot with this changes
+
+------------------------------------------------------------------------------
+Inspecting boot logs
+
+use #journalctl to inspect logs
+
+by default the system jounals are kept in the /run/log/journal directory which means that journals are cleared when the system reboots
+
+To store journals edit /etc/systemd/journald.conf
+set Storage=persistant
+
+#systemctl restart systemd-journald.service
+
+#journalctl -b -1 -p err : to inspect the logs of previous boot
+
+-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+Configure and securing SSH
+
+Connect to remote machine via ssh
+# ssh remotehost
+or
+# ssh remoteuser@remotehost
+or
+#ssh remoteuser@remotehost hostname
+
+# w -f  : used to list loggged in users
+ssh encrypts through public key encryption
+ssh stores server's public key in ~/.ssh/known_hosts
+
+
+ssh allows users to generate a key which facilitates a password less login
+
+----------Configuration in local machine----------------
+ssh keygeneration is done by # ssh-keygen
+private key is stored in ~/.shh/id_rsa
+public key stored in ~/.ssh/id_rsa.pub
+
+To copy ssh key pair to remote host
+# ssh-copy-id -i ~/.ssh/id_rsa.pub remoteuser@remotehost
+This asks for root password of remote machine.... after successful authentication.... the local machine can login without password to remote
+-----------------------------------------------------------------------
+
+Customizing SSH Service configuration
+Config file found at /etc/ssh/sshd_config
+
+In the config file to prevent root login using ssh, set PermitRootLogin no
+restart ssh service using systemctl restart sshd
+
+To prevent password authentication
+Set PasswordAuthentication no 
+Restart service
+
+-----------------------------------------------------------------------
+In AWS, inorder for ssh-copy-id to work, in /etc/ssh/ssh_config, set PasswordAuthentication to yes and restart service
+
+then run cmd,
+
+then revert that back to no as we are trying password less logins
+
+-----------------------------------------------------------------------
+To change ssh from port 22 to 2222
+
+In remote machine
+In file /etc/ssh/sshd_config
+change 
+# Port 22
+to 
+Port 2222
+
+Now we need to add this change in firewall and semanage
+
+Adding to firewall
+# firewall-cmd --permanent --add-port=2222/tcp
+Reload firewall
+# firewall-cmd --reload
+
+Now listing all ports using Semanage
+# semanage port -l |grep ssh
+
+Now adding a port to semanage
+# semanage port -a -t ssh_port_t -p tcp 2222
+
+Now when we list out ports in se manage we can see 22 and 2222
+
+Now we need to reload firewall, only then permanaent save occurs
+
+
+
+
+

@@ -1,0 +1,65 @@
+To find presently working directory
+>>pwd
+
+To change directory
+>>cd location
+
+To create a file
+>> touch new
+
+To get long listing
+>>ls -l
+
+To het hidden files
+>>ls -a
+
+To get Directory structure along with listing
+>>ls -lR
+
+To create a directory
+>>mkdir dir_name
+
+To create sub directory
+>>mkdir -p dir1/dir2/dir3
+
+To copy file
+>>cp source destination
+
+To Move file (Rename can be used)
+>>mv source destination
+
+To create a series of files
+>>touch test{1..5}
+creates file : test1 , test2, test3 etc
+
+same for directories
+>>mkdir dir{a..h}
+created dira dirb ...
+
+Create multiple files
+>> touch 1 2 3 4
+creates file named 1,2,3,4
+
+Creating Links
+
+The purpose of creating links is that when the content of actual file changes, the content of linked files also changes
+T
+wo types : Hardlink and soft Link
+inode number : unique number to represent file in a system
+ls -i <file> : used to list using inode number
+
+Creating Hardlink
+1. create the file
+2. to create hardlink for the file
+>> ln <filename> <hardlink_file>
+eg>> ln ivan ivan_hardlink
+
+Creating SoftLink
+>> ln -s ivan ivan_softlink
+
+Checking inode number of link files
+>> ls -i ivan_hardlink
+>>ls -i ivan_softlink
+
+when we do this.... The hardlink file has same inode number of source file but softlink file has different inode number.
+If we remove the orginal file, hardlink file will exist while softlink will not exist(hardlink is a backup of actual file while softlink is a shortcut)

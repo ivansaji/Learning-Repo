@@ -1,0 +1,19 @@
+Manual Pages : Used to display information on command
+>>man date
+man is divided into sections
+1.User commands
+2.System Calls
+3.Library Functions
+etc etc
+
+To display only a section provide the section number along with command
+>>man 1 date
+>>man 2 date
+
+Similar one is pinfo used to display details on command
+pinfo displays as links - provides detailed info than man
+>>pinfo date
+
+Similar is info
+>>info date
+We can navigate in pinfo and info

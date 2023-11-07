@@ -1,0 +1,144 @@
+To add a user
+# sudo useradd tom
+----------------------------------------------
+To set password for user tom
+# sudo passwd tom
+--------------------------------------------
+To switch user(if root) => switch from root to tom
+# su - tom
+----------------------------------------------------
+To switch to root
+# su -
+Now a passwd will be asked... enter root passwd
+-----------------------------------------
+Ctrl + D or "logout" switches to previous user
+-------------------------------------
+To get admin privilages for a user, add the user to sudoer's file
+Need to be root user
+
+To add a user to sudoers file
+# usermod -aG wheel <username>
+-aG creates a supplimentary group
+----------------------------------------------
+to find groups associated to user
+# groups tom
+
+the result can be "tom : tom wheel"
+tom is the primary group
+wheel is the supplimentary group
+
+--------------------------------------
+when looked at /etc/passwd we can see
+# tail /etc/passwd
+we can see last added group jerry
+
+-------------------------------------
+"/etc/sudoers" file shows the permission controls for users.
+when opened, we can see that 
+"
+##Allow root to run any commands anywhere 
+root    ALL=(ALL)       ALL
+
+"
+this line shows that root user has all previlages
+
+to provide all previlages to another user, give it like
+
+username    ALL=(ALL)       ALL
+--------------------------------------------
+
+To add a new group (named : redhat)
+# groupadd redhat
+
+to make the redhat group the primary group(change primary group from tom to redhat)
+#usermod -g redhat tom
+
+---------------------------------------
+To get the id of a user
+# id <username>
+This displays user id, group id etc
+
+------------------------------------
+On displaying /etc/passwd we can see that tom has /bin/bash which means he can login to bash shell
+
+to turn off login capability of tom,
+# usermod -s /sbin/nologin tom
+
+when we try to login to tom, we cannot login now
+
+to provide login feeature
+
+# usermod -s /bin/bash tom
+------------------------------------------
+To change group id of a user(change group id of redhat to 3000)
+# groupmod -g 3000 redh
+
+to check this "/etc/group" at last we can see redhat with id 3000
+
+---------------------------------------
+Managing user passwords
+
+open the file "/etc/shadow"
+we can see encrypted passwords of users aswell as properties
+
+eg: user:$1$xxxxxxxx
+if $1 : MD5
+if $5 : SHA256
+if $6 : SHA512
+-------------------------------------------
+We can see 'X' in shadow which hides user passwords
+This can be unhided to see the user passwords by using shadowutils
+install: yum install shadowutils
+
+Two commands can be used to hide and unhide password hash
+# pwunconv : unhides the hash
+#pwconv : hides the hash
+
+34$sadwhawieufhw : the left of $ is the salt and right is the password hash
+
+The file "/etc/login.defs" stores password information. We can see algorithms there
+
+To change password algorithms : 
+# sudo authconfig --passalgo=sha512 --update
+
+A linux tool to view password score is pwscore
+# echo "TestPassword" | pwscore
+
+-------------------------------------------
+To get properties of password of particular user...
+
+# chage -l <username>
+
+this displays details of password adn account of tom
+
+To change the properties of password of tom with following prop
+Min number of days of pass chnge :2
+Max days of password change: 90
+No od days of waring before pass expire :3
+Passwd inactive :2
+
+# change -m 2 -M 90 -W 3 -I 2 <username>
+
+Set when account expires
+
+# chage -E yyyy/mm/dd
+eg: chage -E 2021/12/30 <user>
+
+--------------------------------------------
+To display the date after particular number of days
+
+# date -d "+45 days"
+
+this displays date after 45 days
+
+-------------------------------------------
+To make a user change his passwd on next login. He can login only after changing pass
+# chage -d 0 tom
+
+---------------------------------------
+
+To lock a user
+# usermod -L tom
+
+To unlock a user
+# usermod -U tom
